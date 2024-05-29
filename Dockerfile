@@ -2,7 +2,8 @@ FROM node:alpine3.16 as nodework
 WORKDIR /myapp
 COPY package.json .
 RUN npm install
-COPY npm run build
+COPY . .
+RUN npm run build
 
 #ngnix block
 FROM ngnix:1.23-alpine
