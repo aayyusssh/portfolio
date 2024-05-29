@@ -1,29 +1,12 @@
-# Stage 1: Build React App
-FROM node:latest AS build
-
-# Set working directory
-WORKDIR /app
-
-# Copy package.json and package-lock.json
-COPY package*.json ./
-
-# Install dependencies
+FROM node:alpine3.16 as nodework
+WORKDIR /myapp
+COPY package.json .
 RUN npm install
+COPY npm run build
 
-# Copy the rest of the application
-COPY . .
-
-# Build the React app
-RUN npm run build
-
-# Stage 2: Serve React App using Nginx
-FROM nginx:alpine
-
-# Copy built app from the previous stage
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Expose port 80
-EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+#ngnix block
+FROM ngnix:1.23-alpine
+WORKDIR /usr/share/ngnix/html
+RUN rm -rf ./*
+COPY --from=nodework /myapp/build .
+ENTRYPOINT ["ngnix","-g", "daemon off;"]
